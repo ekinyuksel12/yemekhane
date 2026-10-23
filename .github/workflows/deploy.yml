@@ -1,0 +1,38 @@
+name: Siteyi yayınla
+
+# main dalına her push yapıldığında site GitHub Pages'e otomatik yüklenir
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  yayinla:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v5
+
+      - name: Pages ayarlarını hazırla
+        uses: actions/configure-pages@v5
+
+      - name: Siteyi paketle
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Siteyi yayınla
+        id: deployment
+        uses: actions/deploy-pages@v4
